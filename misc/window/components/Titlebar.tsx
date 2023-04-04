@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 2021, Guasam
- *
- * This software is provided "as-is", without any express or implied warranty. In no event
- * will the authors be held liable for any damages arising from the use of this software.
- * Read the LICENSE file for more details.
- *
- * @author  : guasam
- * @project : Electron Window
- * @package : Window Titlebar (Component)
- */
-
 import React, { createRef, useContext, useEffect, useRef, useState } from 'react';
 import titlebarMenus from '../titlebarMenus';
 import classNames from 'classnames';
@@ -32,7 +20,7 @@ const Titlebar: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.repeat) return; // Prevent repeatation of toggle when key holding
+      if (e.repeat) return; // Prevent repetition of toggle when key holding
       if (e.altKey) {
         // Hiding menus? close active menu popup
         if (menusVisible) {

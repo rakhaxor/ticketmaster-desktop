@@ -4,11 +4,11 @@ import WindowFrame from '@misc/window/components/WindowFrame';
 import Application from '@components/Application';
 
 // Say something
-console.log('[ERWT] : Renderer execution started');
+console.log('[Ticketmaster Bot] : Renderer execution started');
 
 // Application to Render
 const app = (
-  <WindowFrame title='ERWT Boilerplate' platform='windows'>
+  <WindowFrame title='Ticketmaster Bot' platform='windows'>
     <Application />
   </WindowFrame>
 );

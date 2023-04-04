@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './Application.scss';
 import { icons } from './Icons';
 
-const Application: React.FC = () => {
+const Application = () => {
   const [counter, setCounter] = useState(0);
   const [darkTheme, setDarkTheme] = useState(true);
   const [versions, setVersions] = useState<Record<string, string>>({});
@@ -50,7 +50,7 @@ const Application: React.FC = () => {
     <div id='erwt'>
       <div className='header'>
         <div className='main-heading'>
-          <h1 className='themed'>ERWT - Electron Boilerplate</h1>
+          <h1 className='themed'>Ticketmaster Bot</h1>
         </div>
         <div className='main-teaser'>
           <div>
