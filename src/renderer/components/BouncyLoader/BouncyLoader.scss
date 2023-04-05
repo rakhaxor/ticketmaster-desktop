@@ -1,0 +1,42 @@
+.bouncy-loader-parent {
+  position: relative;
+  height: 100vh;
+}
+
+.bouncy-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.bouncy-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bouncy-loader > div {
+  width: 16px;
+  height: 16px;
+  margin: 3px 6px;
+  border-radius: 50%;
+  background-color: #a3a1a1;
+  opacity: 1;
+  animation: bouncy-loader 0.6s infinite alternate;
+}
+
+@keyframes bouncy-loader {
+  to {
+    opacity: 0.1;
+    transform: translateY(-16px);
+  }
+}
+
+.bouncy-loader > div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.bouncy-loader > div:nth-child(3) {
+  animation-delay: 0.4s;
+}

@@ -34,9 +34,9 @@ export function createAppWindow(): BrowserWindow {
   });
 
   // Load the index.html of the app window.
-  appWindow.loadURL(APP_WINDOW_WEBPACK_ENTRY);
+  void appWindow.loadURL(APP_WINDOW_WEBPACK_ENTRY);
 
-  // Show window when its ready to
+  // Show window when it is ready to
   appWindow.on('ready-to-show', () => appWindow.show());
 
   // Register Inter Process Communication for main process
