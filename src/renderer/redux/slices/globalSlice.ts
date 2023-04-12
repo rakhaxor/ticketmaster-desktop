@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/named
 import { createSlice, isFulfilled, isPending, isRejected, PayloadAction } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
+import { RESPONSE_CODES } from '@renderer/constants';
 
 interface ToastInterface {
   id: string;
@@ -80,11 +81,17 @@ export const globalSlice = createSlice({
       .addMatcher(isFulfilled, (state, action: any) => {
         const toastIndex = state.toasts.findIndex((t: ToastInterface) => t.actionId === action.meta.requestId);
         if (toastIndex !== -1) {
-          const message = action.payload?.message ? `${action.payload?.message}` : 'Success!';
+          let message = action.payload?.message ? `${action.payload?.message}` : 'Success!';
+          let data = null;
+          if(action.payload?.code) {
+            data = RESPONSE_CODES[action.payload?.code as keyof typeof RESPONSE_CODES];
+            message = data?.message;
+          }
           const foundToast = state.toasts[toastIndex];
-          // if (foundToast.type.includes('/list')) {
-          //   return;
-          // }
+          if (data && !data.status) {
+            toast.error(message, { id: foundToast.id });
+            return;
+          }
           toast.success(message, { id: foundToast.id });
         }
         state.loading = false;

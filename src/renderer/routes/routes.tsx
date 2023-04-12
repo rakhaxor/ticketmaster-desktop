@@ -1,11 +1,16 @@
 import React from 'react';
 
-const Register = React.lazy(() => import('@renderer/pages/Register'));
-const Login = React.lazy(() => import('@renderer/pages/Login'));
-const NotFound = React.lazy(() => import('@renderer/pages/NotFound'));
-const Unauthorized = React.lazy(() => import('@renderer/pages/Unauthorized'));
+import Register from '@renderer/pages/Register';
+import Login from '@renderer/pages/Login';
+import NotFound from '@renderer/pages/NotFound';
+import Unauthorized from '@renderer/pages/Unauthorized';
+import Layout from '@renderer/pages/dashboard/Layout';
 
 const routes = {
+  landing: {
+    path: '/',
+    element: <Login />,
+  },
   register: {
     path: '/register',
     element: <Register />,
@@ -24,10 +29,10 @@ const routes = {
   },
   dashboard: {
     path: '/dashboard',
-    element: <div>Dashboard</div>,
+    element: <Layout />,
     home: {
       path: '/dashboard/home',
-      element: <div>Dashboard Home</div>,
+      element: <>Dashboard Home</>,
     }
   }
 };

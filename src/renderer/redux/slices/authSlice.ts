@@ -7,17 +7,20 @@ import {
 } from '../../services/authService';
 import { ForgotPasswordReqInterface, LoginReqInterface, RegisterReqInterface } from '@renderer/interfaces/reqInterfaces';
 import { UserInterface } from '@renderer/interfaces';
+import { RESPONSE_CODES } from '@renderer/constants';
 
 interface State {
   loggedIn: boolean;
   token: string | null;
   userDetails: UserInterface | null;
+  apikey: string | null;
 }
 
 const initialState: State = {
   loggedIn: false,
   token: null,
   userDetails: null,
+  apikey: null,
 };
 
 export const registerThunk = createAsyncThunk('auth/register/Registration in process 🤖', async (arg: RegisterReqInterface, thunkAPI) => {
@@ -57,13 +60,6 @@ export const forgotPasswordThunk = createAsyncThunk('auth/forgot-password', asyn
   }
 });
 
-const saveDetails = (state: any, { token, user }: { token: string; user: UserInterface }): void => {
-  state.loggedIn = true;
-  state.token = token;
-  localStorage.setItem('token', token);
-  state.userDetails = user;
-};
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -72,21 +68,29 @@ export const authSlice = createSlice({
       state.loggedIn = false;
       state.token = null;
       state.userDetails = null;
+      state.apikey = null;
       localStorage.removeItem('token');
     },
   },
   extraReducers: builder => {
-    builder.addCase(registerThunk.fulfilled, (state, action) => {
-      // saveDetails(state, action.payload.data);
-    });
     builder.addCase(loginThunk.fulfilled, (state, action) => {
-      // saveDetails(state, action.payload.data);
+      const { payload } = action;
+      const { code, data } = payload;
+
+      const codeData = RESPONSE_CODES[code as keyof typeof RESPONSE_CODES];
+      if(codeData?.status) {
+        state.loggedIn = true;
+        const {account, user} = data;
+        // combine both account and user details
+        const {id, email, username, password, verified} = account;
+        state.userDetails = {id, email, username, password, verified, tag: user.tag, accountID: user.accountID};
+
+        // extract apikey from the request
+        state.apikey = action.meta.arg.apiKey;
+      }
     });
-    builder.addCase(logoutThunk.fulfilled, state => {
-      state.loggedIn = false;
-      state.token = null;
-      state.userDetails = null;
-      localStorage.clear();
+    builder.addCase(logoutThunk.fulfilled, _ => {
+      logout();
     });
   },
 });

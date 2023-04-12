@@ -1,6 +1,5 @@
 export interface JsonResponseInterface<T> {
-  status: boolean;
-  message: string | { errors: string };
+  code: string;
   data: T;
 }
 
@@ -11,6 +10,27 @@ export interface RegisterResInterface {
 }
 
 export interface LoginResInterface {
-  email: string;
-  password: string;
+  data: {
+    account: {
+      id: number;
+      email: string;
+      username: string | null;
+      password: string | null;
+      verified: boolean;
+    };
+    user: {
+      id: number;
+      tag: string;
+      email: string;
+      password: string;
+      accountID: number;
+    };
+  };
+  code: string;
+}
+
+export interface RunBotResInterface {
+  status: boolean,
+  message: string,
+  data: any,
 }

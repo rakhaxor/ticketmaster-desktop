@@ -25,11 +25,12 @@ const Login = (): JSX.Element => {
   }, [userDetails]);
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string().required('Email is required').email('Email is invalid'),
+    username: Yup.string().required('Username is required'),
     password: Yup.string()
       .required('Password is required')
       .min(6, 'Password must be at least 6 characters')
       .max(40, 'Password must not exceed 40 characters'),
+    apiKey: Yup.string().required('API key is required'),
   });
 
   const {
@@ -54,21 +55,21 @@ const Login = (): JSX.Element => {
           <div className='card-text'>
             <form onSubmit={handleSubmit(onSubmit)}>
               <input type='hidden' {...register('timezone')} value={timezone} />
-              <div className='form-group'>
-                <label htmlFor='email' className='primary-clr font-weight-bold h6'>
-                  Email address
+              <div className='form-group mt-3'>
+                <label htmlFor='username' className='primary-clr font-weight-bold h6'>
+                  Username
                 </label>
                 <input
-                  type='email'
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                  id='email'
-                  {...register('email')}
-                  placeholder='Enter email...'
-                  data-cy={'email'}
+                  type='text'
+                  className={`form-control ${errors.username ? 'is-invalid' : ''}`}
+                  id='username'
+                  {...register('username')}
+                  placeholder='Enter username...'
+                  data-cy={'username'}
                 />
-                <div className='invalid-feedback'>{errors.email?.message}</div>
+                <div className='invalid-feedback'>{errors.username?.message}</div>
               </div>
-              <div className='form-group'>
+              <div className='form-group mt-3'>
                 <label htmlFor='password' className='primary-clr font-weight-bold h6'>
                   Password
                 </label>
@@ -82,6 +83,21 @@ const Login = (): JSX.Element => {
                   autoComplete='password'
                 />
                 <div className='invalid-feedback'>{errors.password?.message}</div>
+              </div>
+              <div className='form-group mt-3'>
+                <label htmlFor='apiKey' className='primary-clr font-weight-bold h6'>
+                  API Key
+                </label>
+                <input
+                  type='text'
+                  {...register('apiKey')}
+                  className={`form-control ${errors.apiKey ? 'is-invalid' : ''}`}
+                  id='apiKey'
+                  data-cy={'apiKey'}
+                  placeholder='Enter API key...'
+                  autoComplete='apiKey'
+                />
+                <div className='invalid-feedback'>{errors.apiKey?.message}</div>
               </div>
               <button type='submit' className='btn btn-primary btn-block' data-cy={'submit'}>
                 Sign in

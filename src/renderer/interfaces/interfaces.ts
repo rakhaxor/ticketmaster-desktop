@@ -8,6 +8,7 @@ declare global {
 
 export interface UserInterface {
   id: number;
+  username: string;
   email: string;
   password: string;
   accountID: number;

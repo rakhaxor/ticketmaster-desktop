@@ -5,11 +5,22 @@ export interface RegisterReqInterface {
 }
 
 export interface LoginReqInterface {
-  email: string;
+  username: string;
   password: string;
   timezone: string | null;
+  apiKey: string;
 }
 
 export interface ForgotPasswordReqInterface {
   email: string;
 }
+
+export interface RunBotReqInterface {
+  concurrency: number;
+  runHeadless: boolean;
+  buyUrl: string;
+  maxRetries: number;
+  useProxy: boolean;
+  file: File | null;
+}
+
