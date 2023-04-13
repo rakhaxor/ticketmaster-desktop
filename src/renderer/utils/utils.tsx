@@ -21,3 +21,15 @@ export const baseUrl = (url: string): string => {
 export const apiUrl = (url: string): string => {
   return `/api/${url}`;
 };
+
+export const createFormData = (data: any) => {
+  const formData = new FormData();
+  for (const key in data) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (data?.hasOwnProperty(key)) {
+      formData.append(key, data[key]);
+    }
+  }
+  return formData;
+}
+

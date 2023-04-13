@@ -21,6 +21,6 @@ export interface RunBotReqInterface {
   buyUrl: string;
   maxRetries: number;
   useProxy: boolean;
-  file: File | null;
+  file: FileList | null;
 }
 

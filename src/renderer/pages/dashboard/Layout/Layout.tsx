@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { RunBotReqInterface } from '@renderer/interfaces/reqInterfaces';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Logo from '@assets/images/logo.png';
-import { runBotThunk } from '@renderer/redux/slices/dashboard/userSlice';
 
 const Layout = () => {
   const navigate = useNavigate();
@@ -38,7 +37,21 @@ const Layout = () => {
   });
 
   const onSubmit = async (data: RunBotReqInterface) => {
-    await dispatch(runBotThunk(data));
+    // convert to FormData
+    const formData = new FormData();
+    formData.append('concurrency', data.concurrency.toString());
+    formData.append('runHeadless', data.runHeadless.toString());
+    formData.append('buyUrl', data.buyUrl);
+    formData.append('maxRetries', data.maxRetries.toString());
+    formData.append('useProxy', data.useProxy.toString());
+    formData.append('file', data.file[0]);
+
+    // serialize to JSON
+    const json = JSON.stringify(Object.fromEntries(formData));
+
+    console.log(json);
+    const hello = await window.electron_window.test(json);
+    console.log(hello);
   };
 
   return (
