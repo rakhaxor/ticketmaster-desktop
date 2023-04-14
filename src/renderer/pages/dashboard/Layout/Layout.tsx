@@ -47,11 +47,27 @@ const Layout = () => {
     formData.append('file', data.file[0]);
 
     // serialize to JSON
-    const json = JSON.stringify(Object.fromEntries(formData));
+    let json = JSON.stringify(Object.fromEntries(formData));
 
-    console.log(json);
+    // change file to base64
+    const reader = new FileReader();
+    reader.readAsDataURL(data.file[0]);
+    const getFile = async () => {
+      return new Promise<any>(resolve => {
+        reader.onload = () => {
+          // add base64 to json
+          json = JSON.stringify({
+            ...Object.fromEntries(formData),
+            file: reader.result,
+          });
+          resolve(json);
+        }
+      });
+    }
+
+    json = await getFile();
     const hello = await window.electron_window.test(json);
-    console.log(hello);
+    console.log(`hello`, hello);
   };
 
   return (
