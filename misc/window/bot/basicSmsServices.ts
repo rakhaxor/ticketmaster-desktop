@@ -1,9 +1,9 @@
 import axios from "axios";
 import {basicSmsUrl, apiKey, responseCodes} from './config'
 
-function responseParser(response) {
+function responseParser(response: any) {
   const code = response?.data?.code || '0001';
-  const responseCode = responseCodes[code];
+  const responseCode = responseCodes[code as keyof typeof responseCodes];
 
   return {
     status: responseCode.status,
@@ -12,7 +12,7 @@ function responseParser(response) {
   }
 }
 
-export async function login(username, password) {
+export async function login(username: string, password: string) {
   try {
     const response = await axios.post(`${basicSmsUrl}/login`, {
       apiKey,
@@ -26,7 +26,7 @@ export async function login(username, password) {
   }
 }
 
-export async function activateSlot(gateway, port) {
+export async function activateSlot(gateway: string, port: string) {
   try {
     const response = await axios.post(`${basicSmsUrl}/activate-slot`, {
       apiKey,
@@ -40,7 +40,7 @@ export async function activateSlot(gateway, port) {
   }
 }
 
-export async function fetchSims(id) {
+export async function fetchSims(id: number) {
   try {
     const response = await axios.get(`${basicSmsUrl}/all/sims/${apiKey}/${id}`);
     return responseParser(response);
@@ -50,7 +50,7 @@ export async function fetchSims(id) {
   }
 }
 
-export async function fetchMessages(id) {
+export async function fetchMessages(id: number) {
   try {
     const response = await axios.get(`${basicSmsUrl}/all/sms/${apiKey}/${id}`);
     return responseParser(response);

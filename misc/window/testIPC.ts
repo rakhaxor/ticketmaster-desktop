@@ -1,21 +1,16 @@
 import { ipcMain } from 'electron';
-import puppeteer from 'puppeteer';
-
-const runPuppeteer = async (data: any) => {
-  const browser = await puppeteer.launch({ headless: false});
-  const page = await browser.newPage();
-  await page.goto('https://www.google.com');
-  await page.screenshot({ path: 'example.png' });
-  await browser.close();
-  return { success: true, message: 'Data processed successfully' };
-}
+import bot from '@misc/window/bot';
 
 export const registerTestIPC = () => {
   ipcMain.handle('submit-form', async (event, data) => {
-    console.log(data);
-    // json to object
-    const obj = JSON.parse(data);
-    console.log(obj);
-    return await runPuppeteer(data);
+    const json = JSON.parse(data);
+    json.concurrency = Number(json.concurrency);
+    json.runHeadless = json.runHeadless == 'true';
+    json.buyUrl = String(json.buyUrl);
+    json.maxRetries = Number(json.maxRetries);
+    json.useProxy = json.useProxy == 'true';
+    json.file = String(json.file);
+
+    return await bot(json);
   });
 }

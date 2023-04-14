@@ -13,4 +13,11 @@ module.exports = {
     alias: require('./webpack.aliases'),
   },
   stats: 'minimal',
+  externals: {
+    "playwright-extra": "playwright-extra",
+    "puppeteer-extra-plugin-stealth": "puppeteer-extra-plugin-stealth",
+    "csv-parse/lib/sync": "csv-parse/sync",
+    "@extra/proxy-router": "@extra/proxy-router",
+    "is-plain-object": "is-plain-object",
+  },
 };

@@ -87,3 +87,8 @@ out/
 
 # ide
 .idea
+
+misc/window/bot/bad.csv
+misc/window/bot/bought.csv
+misc/window/bot/example.csv
+misc/window/bot/logs.txt
