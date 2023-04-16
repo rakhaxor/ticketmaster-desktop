@@ -21,6 +21,8 @@ function bot(page: any, row: any, index: number, user: any, buyUrl: string) {
   console.log('row in bot', row);
   // eslint-disable-next-line no-async-promise-executor
   return new Promise( async (resolve, reject) => {
+    if(!row) return Promise.resolve('no row');
+
     try {
       const { email, password, fname, lname, zip, phone, proxyInfo } = row;
 

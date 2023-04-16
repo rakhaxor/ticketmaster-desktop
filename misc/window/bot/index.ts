@@ -187,16 +187,23 @@ async function main(data: DataInterface) {
         });
       });
       // console.log(gatewayOrder);
-      // initialRows = tmpInitialRows; // TODO: uncomment this
+      initialRows = tmpInitialRows;
 
       console.log(`remaining rows after sim check: ${initialRows.length}`);
-      runBot(user, browsers, proxyList, data)
-        .then(() => {
-          console.log('done');
-        })
-        .catch((error) => {
-          console.log('error', error);
-        });
+
+      if (initialRows.length) {
+        runBot(user, browsers, proxyList, data)
+          .then(() => {
+            console.log('done');
+          })
+          .catch((error) => {
+            console.log('error', error);
+          });
+      }
+      else {
+        console.log('no rows to process, exiting...');
+        alert('no rows to process, exiting...');
+      }
     });
 }
 
@@ -209,6 +216,11 @@ async function runBot(user: any, browsers: any, proxyList: any, data: DataInterf
     const browserPromises = browsers
       .slice(i, i + concurrency)
       .map(async (browser: any, index: number) => {
+        const row = rows[count];
+
+        console.log('row', row);
+        console.log('url', buyUrl);
+
         // use proxy if enabled
         if (useProxy) {
           console.log('using proxy...');
@@ -242,9 +254,6 @@ async function runBot(user: any, browsers: any, proxyList: any, data: DataInterf
         let page = await inst.newPage();
         await page.setDefaultTimeout(120000);
 
-        const row = rows[count];
-        console.log('row', row);
-        console.log('url', buyUrl);
         while (!success && retries < maxRetries) {
           try {
             message = await bot(page, row, index, user, buyUrl);
@@ -297,6 +306,7 @@ async function runBot(user: any, browsers: any, proxyList: any, data: DataInterf
         count++;
       });
     await Promise.all(browserPromises);
+    await Promise.all(browsers.map((browser: any) => browser.close()));
   }
 }
 

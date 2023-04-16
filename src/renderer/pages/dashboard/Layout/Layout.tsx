@@ -27,7 +27,17 @@ const Layout = () => {
       .min(1, 'Max retries must be at least 1')
       .max(3, 'Max retries must not exceed 3'),
     useProxy: Yup.boolean().required('Use proxy is required'),
-    rows: Yup.array().required('File is required').typeError('File is required'),
+    rows: Yup.array().of(
+      Yup.object().shape({
+        email: Yup.string().required('Email is required'),
+        password: Yup.string().required('Password is required'),
+        first_name: Yup.string().required('First name is required'),
+        last_name: Yup.string().required('Last name is required'),
+        zip: Yup.string().required('Zip is required'),
+        phone: Yup.string().required('Phone is required'),
+        proxyInfo: Yup.string().required('Proxy info is required'),
+      }),
+    ),
   });
 
   const {
@@ -108,7 +118,22 @@ const Layout = () => {
                       return;
                     }
 
-                    setValue('rows', results.data.slice(1), { shouldValidate: true });
+                    const data = results.data.slice(1).map((row: any) => {
+                      return {
+                        email: row[0],
+                        password: row[1],
+                        first_name: row[2],
+                        last_name: row[3],
+                        zip: row[4],
+                        phone: row[5],
+                        proxyInfo: row?.[6] || '',
+                      }
+                    });
+
+                    // remove empty rows
+                    const filteredData = data.filter((row: any) => row.email && row.password);
+
+                    setValue('rows', filteredData, { shouldValidate: true });
                   }}
                 >
                   {({
