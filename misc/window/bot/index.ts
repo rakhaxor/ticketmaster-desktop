@@ -8,9 +8,18 @@ import { ProxyRouter } from '@extra/proxy-router';
 import { log } from './utils';
 import bot from './bot';
 import { fetchSims, login } from './basicSmsServices';
-import * as buffer from 'buffer';
 
 const stealth = StealthPlugin();
+
+interface RowInterface {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  zip: string;
+  phone: string;
+  proxyInfo?: string;
+}
 
 interface DataInterface {
   concurrency: number;
@@ -18,10 +27,10 @@ interface DataInterface {
   runHeadless: boolean;
   buyUrl: string;
   maxRetries: number;
-  file: File;
+  rows: Array<RowInterface>;
 }
 
-async function main(data: any) {
+async function main(data: DataInterface) {
 
 // create logs file if not exists
   if (!fs.existsSync('misc/window/bot/logs.txt')) {
@@ -48,37 +57,7 @@ async function main(data: any) {
     `#################### ${dateTimeStr} ####################\n`,
   );
 
-  interface IRow {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    zip: string;
-    phone: string;
-    proxyInfo?: string;
-  }
-
-  const file = data.file;
-  let buffer: Buffer;
-  try {
-    // convert base64 to file
-    buffer = Buffer.from(file, 'base64');
-    // const blob = new Blob([buffer], { type: 'text/csv' });
-    // file = new File([blob], 'file.csv', { type: 'text/csv' });
-  } catch (error) {
-    console.log('error while converting base64 to file', error);
-  }
-
-// Read the CSV file and store all rows in an array
-  console.log('reading csv file...');
-  // let initialRows: Array<IRow> = parse(fs.readFileSync('misc/window/bot/example.csv'), {
-  //   columns: true,
-  //   skip_empty_lines: true,
-  // });
-  let initialRows: Array<IRow> = parse(buffer, {
-    columns: true,
-    skip_empty_lines: true,
-  });
+  let initialRows: Array<RowInterface> = data.rows;
 
   console.log(`total rows: ${initialRows.length}`);
 
@@ -211,7 +190,7 @@ async function main(data: any) {
       // initialRows = tmpInitialRows; // TODO: uncomment this
 
       console.log(`remaining rows after sim check: ${initialRows.length}`);
-      runBot(user, browsers, proxyList, data, initialRows)
+      runBot(user, browsers, proxyList, data)
         .then(() => {
           console.log('done');
         })
@@ -222,8 +201,8 @@ async function main(data: any) {
 }
 
 // run the number of browsers equal to the concurrency at a time
-async function runBot(user: any, browsers: any, proxyList: any, data: any, initialRows: any) {
-  const { concurrency, useProxy, runHeadless, buyUrl, maxRetries, file } = data;
+async function runBot(user: any, browsers: any, proxyList: any, data: DataInterface) {
+  const { concurrency, useProxy, runHeadless, buyUrl, maxRetries, rows } = data;
 
   let count = 0;
   for (let i = 0; i < browsers.length; i + concurrency) {
@@ -263,12 +242,12 @@ async function runBot(user: any, browsers: any, proxyList: any, data: any, initi
         let page = await inst.newPage();
         await page.setDefaultTimeout(120000);
 
-        const row = initialRows[count];
+        const row = rows[count];
         console.log('row', row);
         console.log('url', buyUrl);
         while (!success && retries < maxRetries) {
           try {
-            message = await bot(page, row, index, user);
+            message = await bot(page, row, index, user, buyUrl);
             log(`[${row.email}] ${message} for url: ${buyUrl}`);
             success = true;
             fs.appendFileSync('misc/window/bot/bought.csv', `\n${row.email}`);
@@ -290,7 +269,7 @@ async function runBot(user: any, browsers: any, proxyList: any, data: any, initi
               await page.setDefaultTimeout(120000);
 
               try {
-                message = await bot(page, row, index, user);
+                message = await bot(page, row, index, user, buyUrl);
                 log(`[${row.email}] ${message} for url: ${buyUrl}`);
                 success = true;
                 fs.appendFileSync('misc/window/bot/bought.csv', `\n${row.email}`);

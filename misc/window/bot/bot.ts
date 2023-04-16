@@ -1,5 +1,4 @@
 import moment from "moment-timezone";
-import { buyUrl } from "./config";
 
 import {
   fetchSims,
@@ -7,16 +6,6 @@ import {
   fetchMessages,
   fetchSlotCooldowns,
 } from "./basicSmsServices";
-import { log } from '@misc/window/bot/utils';
-
-// interface PuppeteerData {
-//   concurrency: number;
-//   runHeadless: boolean;
-//   buyUrl: string;
-//   maxRetries: number;
-//   useProxy: boolean;
-//   file: File;
-// }
 
 async function simulateHumanTyping(page: any, selector: any, value: any) {
   const randomTime = Number(Math.floor(Math.random() * 30));
@@ -28,7 +17,7 @@ async function simulateHumanTyping(page: any, selector: any, value: any) {
   // }
 }
 
-function bot(page: any, row: any, index: number, user: any) {
+function bot(page: any, row: any, index: number, user: any, buyUrl: string) {
   console.log('row in bot', row);
   // eslint-disable-next-line no-async-promise-executor
   return new Promise( async (resolve, reject) => {

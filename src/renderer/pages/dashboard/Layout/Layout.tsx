@@ -1,14 +1,16 @@
 import React from 'react';
 import './Layout.scss';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
+import { useCSVReader } from 'react-papaparse';
+import { useAppDispatch, useAppSelector } from '@renderer/hooks';
 import { RunBotReqInterface } from '@renderer/interfaces/reqInterfaces';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Logo from '@assets/images/logo.png';
 
 const Layout = () => {
+  const { CSVReader } = useCSVReader();
   const navigate = useNavigate();
   const { userDetails } = useAppSelector(state => state.auth);
   const dispatch = useAppDispatch();
@@ -25,48 +27,21 @@ const Layout = () => {
       .min(1, 'Max retries must be at least 1')
       .max(3, 'Max retries must not exceed 3'),
     useProxy: Yup.boolean().required('Use proxy is required'),
-    file: Yup.mixed().required('File is required'),
+    rows: Yup.array().required('File is required').typeError('File is required'),
   });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<RunBotReqInterface>({
     resolver: yupResolver(validationSchema),
   });
 
   const onSubmit = async (data: RunBotReqInterface) => {
-    // convert to FormData
-    const formData = new FormData();
-    formData.append('concurrency', data.concurrency.toString());
-    formData.append('runHeadless', data.runHeadless.toString());
-    formData.append('buyUrl', data.buyUrl);
-    formData.append('maxRetries', data.maxRetries.toString());
-    formData.append('useProxy', data.useProxy.toString());
-    formData.append('file', data.file[0]);
-
-    // serialize to JSON
-    let json = JSON.stringify(Object.fromEntries(formData));
-
-    // change file to base64
-    const reader = new FileReader();
-    reader.readAsDataURL(data.file[0]);
-    const getFile = async () => {
-      return new Promise<any>(resolve => {
-        reader.onload = () => {
-          // add base64 to json
-          json = JSON.stringify({
-            ...Object.fromEntries(formData),
-            file: reader.result,
-          });
-          resolve(json);
-        }
-      });
-    }
-
-    json = await getFile();
-    const hello = await window.electron_window.test(json);
+    console.log('data', data);
+    const hello = await window.electron_window.test(data);
     console.log(`hello`, hello);
   };
 
@@ -114,14 +89,54 @@ const Layout = () => {
                   File
                 </label>
                 <input
-                  type='file'
-                  {...register('file')}
-                  className={`form-control ${errors.file ? 'is-invalid' : ''}`}
+                  type='hidden'
+                  {...register('rows')}
+                  className={`form-control ${errors.rows ? 'is-invalid' : ''}`}
                   id='file'
                   data-cy={'file'}
                   autoComplete='buyUrl'
                 />
-                <div className='invalid-feedback'>{errors.file?.message}</div>
+                <CSVReader
+                  onUploadAccepted={(results: any) => {
+                    console.log('---------------------------');
+                    console.log(results);
+                    console.log('---------------------------');
+                    // check if headers have email, password
+                    const headers = results.data[0];
+                    if (!headers.includes('email') || !headers.includes('password')) {
+                      alert('Invalid file');
+                      return;
+                    }
+
+                    setValue('rows', results.data.slice(1), { shouldValidate: true });
+                  }}
+                >
+                  {({
+                      getRootProps,
+                      acceptedFile,
+                      ProgressBar,
+                      getRemoveFileProps,
+                    }: any) => {
+                    return (
+                      <>
+                        <div className='d-flex'>
+                          <button type='button' className='btn btn-outline-primary' {...getRootProps()}>
+                            Browse file
+                          </button>
+                          <div style={{ marginLeft: 20 }}>
+                            {acceptedFile && !errors?.rows && acceptedFile.name}
+                          </div>
+                        </div>
+                        <ProgressBar />
+                      </>
+                    )
+                  }}
+                </CSVReader>
+                {
+                  errors.rows && (
+                    <div className='invalid-feedback'>{errors.rows?.message}</div>
+                  )
+                }
               </div>
               <div className='form-group mt-3'>
                 <label htmlFor='maxRetries' className='primary-clr font-weight-bold h6'>

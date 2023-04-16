@@ -1,3 +1,5 @@
+import { RowInterface } from '@renderer/interfaces/interfaces';
+
 export interface RegisterReqInterface {
   username: string;
   email: string;
@@ -21,6 +23,6 @@ export interface RunBotReqInterface {
   buyUrl: string;
   maxRetries: number;
   useProxy: boolean;
-  file: FileList | null;
+  rows: Array<RowInterface>;
 }
 

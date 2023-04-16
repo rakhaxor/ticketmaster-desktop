@@ -15,3 +15,13 @@ export interface UserInterface {
   verified: boolean;
   tag: string;
 }
+
+export interface RowInterface {
+  email: string,
+  password: string,
+  first_name: string,
+  last_name: string,
+  zip: string,
+  phone: string,
+  proxyInfo: string,
+}
